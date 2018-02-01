@@ -1,3 +1,10 @@
+#[macro_use]
+extern crate serde_derive;
+
+extern crate serde;
+
+extern crate serde_json;
+
 mod server;
 mod test;
 mod util;
@@ -7,6 +14,8 @@ use test::*;
 use util::pretty_print;
 
 use std::env;
+use std::fs::File;
+use std::io::Write;
 
 const USAGE_MESSAGE: &'static str = r#"
 Usage: dl1 [mode] [tests]
@@ -97,7 +106,7 @@ fn main() {
             }
         };
 
-        server.run_tests(vec![
+        let result: Vec<test::TestData> = server.run_tests(vec![
             Test::TcpTest(TestSpec { message_len: 1, num_messages: 64 }),
             Test::TcpTest(TestSpec { message_len: 64, num_messages: 64 }),
             Test::TcpTest(TestSpec { message_len: 1024, num_messages: 64 }),
@@ -109,7 +118,11 @@ fn main() {
             Test::TcpTest(TestSpec { message_len: 1024 * 64, num_messages: 64 }),
             Test::TcpTest(TestSpec { message_len: 1024 * 256, num_messages: 64 }),
             Test::TcpTest(TestSpec { message_len: 1024 * 1024, num_messages: 64 }),
-        ]);
+        ]).unwrap().into_iter().map(Result::ok).filter_map(|x| x).collect();
+
+        let mut file = File::create("output_spectre_to_nuc.json").unwrap();
+        let serialized = serde_json::to_string_pretty(&result).unwrap();
+        file.write_all(serialized.as_bytes()).unwrap();
     } else {
         println!("{}", USAGE_MESSAGE);
     }

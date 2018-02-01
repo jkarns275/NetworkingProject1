@@ -9,7 +9,7 @@ pub enum Test {
 }
 
 /// A struct that has specifications for a test to follow.
-#[derive(Hash, Debug)]
+#[derive(Hash, Debug, Serialize, Deserialize)]
 pub struct TestSpec {
     /// The number of messages that should be sent
     pub num_messages: u32,
@@ -22,7 +22,7 @@ pub type TestResult = Result<TestData, Option<io::Error>>;
 
 
 /// A structure containing data about a test that ran.
-#[derive(Hash, Debug)]
+#[derive(Hash, Debug, Serialize, Deserialize)]
 pub struct TestData {
     /// The amount of time the test took to finish
     pub total_duration: Duration,
