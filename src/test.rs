@@ -1,8 +1,10 @@
 use std::io;
 use std::time::Duration;
+use std::ops::{ Div, Add };
 
 /// A web test that should use either a TCP/IP connection or a UDP connection. Both contain a
 /// TestSpec struct that has specifications for the test.
+#[derive(Serialize, Deserialize, Debug, Hash)]
 pub enum Test {
     UdpTest(TestSpec),
     TcpTest(TestSpec)
@@ -31,9 +33,28 @@ pub struct TestData {
     pub individual_durations: Vec<Option<Duration>>,
 
     /// The spec the test followed
-    pub test_spec: TestSpec,
+    pub test: Test,
 
     /// The messages that were dropped. The values correspond to the message number
     /// that was dropped.
     pub dropped_messages: Vec<u32>
+}
+
+impl TestData {
+    pub fn average_duration(&self) -> Duration {
+        let mut total = Duration::new(0, 0);
+        let mut num_messages = 0;
+        for i in self.individual_durations.iter() {
+            match i {
+                &Some(ref x) => {
+
+                    num_messages += 1;
+                    total = total.add(*x);
+                },
+                &None => {}
+            }
+        }
+        total.div(num_messages);
+        total
+    }
 }
