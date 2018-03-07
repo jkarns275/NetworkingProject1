@@ -54,7 +54,7 @@ impl TestData {
                 &None => {}
             }
         }
-        total.div(num_messages);
+        total = total.div(num_messages);
         total
     }
 }
