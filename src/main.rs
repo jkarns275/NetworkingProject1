@@ -22,7 +22,7 @@ use std::env;
 const USAGE_MESSAGE: &'static str = r#"
 Usage: dl1 [mode] [tests]
 
-modes: serve, echo, help
+modes: serve, echo, required, help
 
 test format (keep quotes): "[UDP|TCP] [num_messages] [message_len]"
 
@@ -107,12 +107,20 @@ fn required() {
         Test::TcpTest(TestSpec { message_len: 1, num_messages: 64 }),
         Test::TcpTest(TestSpec { message_len: 64, num_messages: 64 }),
         Test::TcpTest(TestSpec { message_len: 1024, num_messages: 64 }),
-        Test::UdpTest(TestSpec { message_len: 1, num_messages: 64 * 1024 }),
+        Test::UdpTest(TestSpec { message_len: 1, num_messages: 64 }),
         Test::UdpTest(TestSpec { message_len: 64, num_messages: 64 }),
         Test::UdpTest(TestSpec { message_len: 1024, num_messages: 64 }),
         Test::TcpTest(TestSpec { message_len: 1024, num_messages: 64 }),
         Test::TcpTest(TestSpec { message_len: 1024 * 16, num_messages: 64 }),
         Test::TcpTest(TestSpec { message_len: 1024 * 64, num_messages: 64 }),
+        Test::TcpTest(TestSpec { message_len: 1024 * 256, num_messages: 64 }),
+        Test::TcpTest(TestSpec { message_len: 1024 * 1024, num_messages: 64 }),
+	Test::TcpTest(TestSpec { message_len: 1024 * 4, num_messages: 256 }),
+	Test::TcpTest(TestSpec { message_len: 1024 * 2, num_messages: 512 }),
+	Test::TcpTest(TestSpec { message_len: 1024 * 1, num_messages: 1024 }),
+	Test::UdpTest(TestSpec { message_len: 1024 * 4, num_messages: 256 }),
+	Test::UdpTest(TestSpec { message_len: 1024 * 2, num_messages: 512 }),
+	Test::UdpTest(TestSpec { message_len: 1024 * 1, num_messages: 1024 }),
     ]).unwrap().into_iter().map(Result::ok).filter_map(|x| x).collect();
 
     util::save_data_as_csv(result, "data.csv").unwrap();
